@@ -75,6 +75,82 @@ mod imp {
     }
 }
 
+#[cfg(target_os = "redox")]
+mod imp {
+    use std::io::prelude::*;
+    use std::fs;
+    use std::io;
+    use std::os::unix::prelude::*;
+    use std::process::{ChildStdout, ChildStderr};
+    use syscall;
+
+    pub fn read2(mut out_pipe: ChildStdout,
+                 mut err_pipe: ChildStderr,
+                 data: &mut FnMut(bool, &mut Vec<u8>, bool)) -> io::Result<()> {
+        let mut event_file = fs::OpenOptions::new().read(true).write(true).open("event:")?;
+
+        syscall::fcntl(out_pipe.as_raw_fd(), syscall::F_SETFL, syscall::O_NONBLOCK)
+            .map_err(|x| io::Error::from_raw_os_error(x.errno))?;
+        syscall::fcntl(err_pipe.as_raw_fd(), syscall::F_SETFL, syscall::O_NONBLOCK)
+            .map_err(|x| io::Error::from_raw_os_error(x.errno))?;
+
+        event_file.write(&syscall::Event {
+            id: out_pipe.as_raw_fd(),
+            flags: syscall::EVENT_READ,
+            data: 1
+        })?;
+        event_file.write(&syscall::Event {
+            id: err_pipe.as_raw_fd(),
+            flags: syscall::EVENT_READ,
+            data: 2
+        })?;
+
+        let mut out_done = false;
+        let mut err_done = false;
+        let mut out = Vec::new();
+        let mut err = Vec::new();
+
+        loop {
+            // wait for either pipe to become readable
+            let mut event = syscall::Event::default();
+            let count = event_file.read(&mut event)?;
+            if count == 0 {
+                continue;
+            }
+
+            // Read as much as we can from each pipe, ignoring EWOULDBLOCK or
+            // EAGAIN. If we hit EOF, then this will happen because the underlying
+            // reader will return Ok(0), in which case we'll see `Ok` ourselves. In
+            // this case we flip the other fd back into blocking mode and read
+            // whatever's leftover on that file descriptor.
+            let handle = |res: io::Result<_>| {
+                match res {
+                    Ok(_) => Ok(true),
+                    Err(e) => {
+                        if e.kind() == io::ErrorKind::WouldBlock {
+                            Ok(false)
+                        } else {
+                            Err(e)
+                        }
+                    }
+                }
+            };
+            if !out_done && event.id == out_pipe.as_raw_fd() && handle(out_pipe.read_to_end(&mut out))? {
+                out_done = true;
+            }
+            data(true, &mut out, out_done);
+            if !err_done && event.id == err_pipe.as_raw_fd() && handle(err_pipe.read_to_end(&mut err))? {
+                err_done = true;
+            }
+            data(false, &mut err, err_done);
+
+            if out_done && err_done {
+                return Ok(())
+            }
+        }
+    }
+}
+
 #[cfg(windows)]
 mod imp {
     use std::io;

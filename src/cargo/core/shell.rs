@@ -402,6 +402,26 @@ mod imp {
     }
 }
 
+#[cfg(target_os = "redox")]
+mod imp {
+    use redox_termios;
+    use syscall;
+
+    pub fn stderr_width() -> Option<usize> {
+        let mut winsize = redox_termios::Winsize::default();
+
+        let fd = syscall::dup(2, b"winsize").ok()?;
+        let res = syscall::read(fd, &mut winsize).ok();
+        let _ = syscall::close(fd);
+
+        if res? == winsize.len() {
+            Some(winsize.ws_col as usize)
+        } else {
+            None
+        }
+    }
+}
+
 #[cfg(windows)]
 mod imp {
     use std::{cmp, mem, ptr};

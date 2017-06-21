@@ -40,6 +40,15 @@ mod imp {
     }
 }
 
+#[cfg(target_os = "redox")]
+mod imp {
+    pub type Setup = ();
+
+    pub unsafe fn setup() -> Option<()> {
+        Some(())
+    }
+}
+
 #[cfg(windows)]
 mod imp {
     use std::io;

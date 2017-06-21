@@ -24,26 +24,26 @@ bytesize = "1.0"
 crates-io = { path = "src/crates-io", version = "0.24" }
 crossbeam-utils = "0.6"
 crypto-hash = "0.3.1"
-curl = { version = "0.4.19", features = ['http2'] }
-curl-sys = "0.4.15"
+curl = { path = "redox/curl", features = ['http2'] }
+curl-sys = { path = "redox/curl/curl-sys" }
 env_logger = "0.6.0"
 pretty_env_logger = { version = "0.3", optional = true }
 failure = "0.1.5"
 filetime = "0.2"
 flate2 = { version = "1.0.3", features = ['zlib'] }
 fs2 = "0.4"
-git2 = "0.8.0"
-git2-curl = "0.9.0"
+git2 = { path = "redox/git2", default-features = false, features = ["https", "curl"] }
+git2-curl = { path = "redox/git2/git2-curl" }
 glob = "0.3.0"
 hex = "0.3"
-home = "0.3"
+home = { path = "redox/home" }
 ignore = "0.4"
 lazy_static = "1.2.0"
-jobserver = "0.1.13"
+jobserver = { path = "redox/jobserver" }
 lazycell = "1.2.0"
 libc = "0.2"
 log = "0.4.6"
-libgit2-sys = "0.7.9"
+libgit2-sys = { path = "redox/git2/libgit2-sys" }
 num_cpus = "1.0"
 opener = "0.3.0"
 rustfix = "0.4.4"
@@ -57,7 +57,7 @@ tar = { version = "0.4.18", default-features = false }
 tempfile = "3.0"
 termcolor = "1.0"
 toml = "0.5.0"
-url = "1.1"
+url = { path = "redox/url" }
 url_serde = "0.2.0"
 walkdir = "2.2"
 clap = "2.31.2"
@@ -72,6 +72,10 @@ rustc-workspace-hack = "1.0.0"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 core-foundation = { version = "0.6.0", features = ["mac_os_10_7_support"] }
+
+[target.'cfg(target_os = "redox")'.dependencies]
+redox_syscall = "0.1"
+redox_termios = "0.1"
 
 [target.'cfg(windows)'.dependencies]
 miow = "0.3.1"
@@ -111,3 +115,8 @@ doc = false
 deny-warnings = []
 vendored-openssl = ['openssl/vendored']
 pretty-env-logger = ['pretty_env_logger']
+
+[patch.crates-io]
+curl = { path = "redox/curl" }
+curl-sys = { path = "redox/curl/curl-sys" }
+libc = { path = "redox/libc" }

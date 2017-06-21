@@ -1,0 +1,28 @@
+[submodule "curl"]
+	path = redox/curl
+	url = https://gitlab.redox-os.org/redox-os/curl-rust.git
+	branch = redox
+[submodule "fs2"]
+	path = redox/fs2
+	url = https://gitlab.redox-os.org/redox-os/fs2-rs.git
+	branch = redox
+[submodule "redox/home"]
+	path = redox/home
+	url = https://gitlab.redox-os.org/redox-os/home.git
+	branch = redox
+[submodule "redox/git2"]
+	path = redox/git2
+	url = https://gitlab.redox-os.org/redox-os/git2-rs.git
+	branch = redox
+[submodule "redox/jobserver"]
+	path = redox/jobserver
+	url = https://gitlab.redox-os.org/redox-os/jobserver-rs.git
+	branch = redox
+[submodule "redox/url"]
+	path = redox/url
+	url = https://gitlab.redox-os.org/redox-os/rust-url.git
+	branch = redox
+[submodule "redox/libc"]
+	path = redox/libc
+	url = https://gitlab.redox-os.org/redox-os/liblibc.git
+	branch = redox

@@ -182,6 +182,7 @@ pub fn append(path: &Path, contents: &[u8]) -> CargoResult<()> {
     Ok(())
 }
 
+<<<<<<< HEAD
 pub fn mtime(path: &Path) -> CargoResult<FileTime> {
     let meta = fs::metadata(path).chain_err(|| format!("failed to stat `{}`", path.display()))?;
     Ok(FileTime::from_last_modification_time(&meta))
@@ -201,6 +202,9 @@ pub fn set_invocation_time(path: &Path) -> CargoResult<FileTime> {
 }
 
 #[cfg(unix)]
+=======
+#[cfg(any(unix, target_os = "redox"))]
+>>>>>>> b12ef014... Redox support
 pub fn path2bytes(path: &Path) -> CargoResult<&[u8]> {
     use std::os::unix::prelude::*;
     Ok(path.as_os_str().as_bytes())
@@ -216,7 +220,7 @@ pub fn path2bytes(path: &Path) -> CargoResult<&[u8]> {
     }
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, target_os = "redox"))]
 pub fn bytes2path(bytes: &[u8]) -> CargoResult<PathBuf> {
     use std::os::unix::prelude::*;
     Ok(PathBuf::from(OsStr::from_bytes(bytes)))
