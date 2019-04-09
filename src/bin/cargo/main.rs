@@ -164,7 +164,7 @@ fn execute_external_subcommand(config: &Config, cmd: &str, args: &[&str]) -> Cli
     Err(CliError::new(err, 101))
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, target_os = "redox"))]
 fn is_executable<P: AsRef<Path>>(path: P) -> bool {
     use std::os::unix::prelude::*;
     fs::metadata(path)
