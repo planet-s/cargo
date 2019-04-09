@@ -22,7 +22,7 @@
 	path = redox/url
 	url = https://gitlab.redox-os.org/redox-os/rust-url.git
 	branch = redox
-[submodule "redox/libc"]
-	path = redox/libc
-	url = https://gitlab.redox-os.org/redox-os/liblibc.git
+[submodule "redox/ripgrep"]
+	path = redox/ripgrep
+	url = https://gitlab.redox-os.org/redox-os/ripgrep.git
 	branch = redox

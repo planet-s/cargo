@@ -160,29 +160,8 @@ impl ProcessBuilder {
             Ok(())
         } else {
             Err(process_error(
-<<<<<<< HEAD
                 &format!("process didn't exit successfully: {}", self),
                 Some(exit),
-=======
-                &format!("process didn't exit successfully: `{}`", self.debug_string()),
-                Some(&exit), None).into())
-        }
-    }
-
-    /// On unix, executes the process using the unix syscall `execvp`, which will block this
-    /// process, and will only return if there is an error. On windows this is a synonym for
-    /// `exec`.
-    #[cfg(any(unix, target_os="redox"))]
-    pub fn exec_replace(&self) -> CargoResult<()> {
-        use std::os::unix::process::CommandExt;
-
-        let mut command = self.build_command();
-        let error = command.exec();
-        Err(CargoError::from(error).context(
-            process_error(
-                &format!("could not execute process `{}`", self.debug_string()),
-                None,
->>>>>>> b12ef014... Redox support
                 None,
             )
             .into())
@@ -361,7 +340,7 @@ pub fn process<T: AsRef<OsStr>>(cmd: T) -> ProcessBuilder {
     }
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, target_os = "redox"))]
 mod imp {
     use crate::util::{process_error, ProcessBuilder};
     use crate::CargoResult;

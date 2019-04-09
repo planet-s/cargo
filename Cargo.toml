@@ -31,13 +31,13 @@ pretty_env_logger = { version = "0.3", optional = true }
 failure = "0.1.5"
 filetime = "0.2"
 flate2 = { version = "1.0.3", features = ['zlib'] }
-fs2 = "0.4"
+fs2 = { path = "redox/fs2" }
 git2 = { path = "redox/git2", default-features = false, features = ["https", "curl"] }
 git2-curl = { path = "redox/git2/git2-curl" }
 glob = "0.3.0"
 hex = "0.3"
 home = { path = "redox/home" }
-ignore = "0.4"
+ignore = { path = "redox/ripgrep/ignore" }
 lazy_static = "1.2.0"
 jobserver = { path = "redox/jobserver" }
 lazycell = "1.2.0"
@@ -58,7 +58,7 @@ tempfile = "3.0"
 termcolor = "1.0"
 toml = "0.5.0"
 url = { path = "redox/url" }
-url_serde = "0.2.0"
+url_serde = { path = "redox/url/url_serde" }
 walkdir = "2.2"
 clap = "2.31.2"
 unicode-width = "0.1.5"
@@ -119,4 +119,3 @@ pretty-env-logger = ['pretty_env_logger']
 [patch.crates-io]
 curl = { path = "redox/curl" }
 curl-sys = { path = "redox/curl/curl-sys" }
-libc = { path = "redox/libc" }

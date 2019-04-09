@@ -493,7 +493,7 @@ fn hardlink_or_copy(src: &Path, dst: &Path) -> CargoResult<()> {
 
     let link_result = if src.is_dir() {
         #[cfg(target_os = "redox")]
-        use std::os::redox::fs::symlink;
+        use std::os::unix::fs::symlink;
         #[cfg(unix)]
         use std::os::unix::fs::symlink;
         #[cfg(windows)]

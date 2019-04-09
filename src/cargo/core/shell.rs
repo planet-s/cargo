@@ -407,6 +407,8 @@ mod imp {
     use redox_termios;
     use syscall;
 
+    use super::Shell;
+
     pub fn stderr_width() -> Option<usize> {
         let mut winsize = redox_termios::Winsize::default();
 
@@ -419,6 +421,13 @@ mod imp {
         } else {
             None
         }
+    }
+
+    pub fn err_erase_line(shell: &mut Shell) {
+        // This is the "EL - Erase in Line" sequence. It clears from the cursor
+        // to the end of line.
+        // https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_sequences
+        let _ = shell.err.as_write().write_all(b"\x1B[K");
     }
 }
 

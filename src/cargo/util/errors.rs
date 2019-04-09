@@ -305,7 +305,7 @@ pub fn process_error(
         output: output.cloned(),
     };
 
-    #[cfg(unix)]
+    #[cfg(any(unix, target_os = "redox"))]
     fn status_to_string(status: ExitStatus) -> String {
         use std::os::unix::process::*;
 
@@ -334,7 +334,6 @@ pub fn process_error(
         }
     }
 
-<<<<<<< HEAD
     #[cfg(windows)]
     fn status_to_string(status: ExitStatus) -> String {
         use winapi::shared::minwindef::DWORD;
@@ -378,11 +377,6 @@ pub fn process_error(
         base.push_str(", ");
         base.push_str(extra);
         base
-=======
-    #[cfg(any(windows, target_os = "redox"))]
-    fn status_to_string(status: &ExitStatus) -> String {
-        status.to_string()
->>>>>>> b12ef014... Redox support
     }
 }
 

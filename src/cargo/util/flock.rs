@@ -3,24 +3,14 @@ use std::io;
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Display, Path, PathBuf};
 
-<<<<<<< HEAD
 use fs2::{lock_contended_error, FileExt};
-=======
-//use termcolor::Color::Cyan;
-//use fs2::{FileExt, lock_contended_error};
->>>>>>> b12ef014... Redox support
 #[allow(unused_imports)]
 use libc;
 use termcolor::Color::Cyan;
 
-<<<<<<< HEAD
 use crate::util::errors::{CargoResult, CargoResultExt};
 use crate::util::paths;
 use crate::util::Config;
-=======
-use util::Config;
-use util::errors::{CargoResult, CargoResultExt/*, CargoError*/};
->>>>>>> b12ef014... Redox support
 
 pub struct FileLock {
     f: Option<File>,
@@ -100,7 +90,6 @@ impl Write for FileLock {
     }
 }
 
-/*
 impl Drop for FileLock {
     fn drop(&mut self) {
         if self.state != State::Unlocked {
@@ -110,7 +99,6 @@ impl Drop for FileLock {
         }
     }
 }
-*/
 
 /// A "filesystem" is intended to be a globally shared, hence locked, resource
 /// in Cargo.
@@ -207,7 +195,6 @@ impl Filesystem {
         )
     }
 
-<<<<<<< HEAD
     fn open(
         &self,
         path: &Path,
@@ -216,20 +203,11 @@ impl Filesystem {
         config: &Config,
         msg: &str,
     ) -> CargoResult<FileLock> {
-=======
-    fn open(&self,
-            path: &Path,
-            opts: &OpenOptions,
-            state: State,
-            _config: &Config,
-            _msg: &str) -> CargoResult<FileLock> {
->>>>>>> b12ef014... Redox support
         let path = self.root.join(path);
 
         // If we want an exclusive lock then if we fail because of NotFound it's
         // likely because an intermediate directory didn't exist, so try to
         // create the directory and then continue.
-<<<<<<< HEAD
         let f = opts
             .open(&path)
             .or_else(|e| {
@@ -241,19 +219,6 @@ impl Filesystem {
                 }
             })
             .chain_err(|| format!("failed to open: {}", path.display()))?;
-=======
-        let f = opts.open(&path).or_else(|e| {
-            if e.kind() == io::ErrorKind::NotFound && state == State::Exclusive {
-                create_dir_all(path.parent().unwrap())?;
-                opts.open(&path)
-            } else {
-                Err(e)
-            }
-        }).chain_err(|| {
-            format!("failed to open: {}", path.display())
-        })?;
-        /*
->>>>>>> b12ef014... Redox support
         match state {
             State::Exclusive => {
                 acquire(config, msg, &path, &|| f.try_lock_exclusive(), &|| {
@@ -267,16 +232,11 @@ impl Filesystem {
             }
             State::Unlocked => {}
         }
-<<<<<<< HEAD
         Ok(FileLock {
             f: Some(f),
             path,
             state,
         })
-=======
-        */
-        Ok(FileLock { f: Some(f), path: path, state: state })
->>>>>>> b12ef014... Redox support
     }
 }
 
@@ -307,7 +267,6 @@ impl PartialEq<Filesystem> for Path {
 ///
 /// Returns an error if the lock could not be acquired or if any error other
 /// than a contention error happens.
-<<<<<<< HEAD
 fn acquire(
     config: &Config,
     msg: &str,
@@ -315,15 +274,6 @@ fn acquire(
     r#try: &dyn Fn() -> io::Result<()>,
     block: &dyn Fn() -> io::Result<()>,
 ) -> CargoResult<()> {
-=======
-/*
-fn acquire(config: &Config,
-           msg: &str,
-           path: &Path,
-           try: &Fn() -> io::Result<()>,
-           block: &Fn() -> io::Result<()>) -> CargoResult<()> {
-
->>>>>>> b12ef014... Redox support
     // File locking on Unix is currently implemented via `flock`, which is known
     // to be broken on NFS. We could in theory just ignore errors that happen on
     // NFS, but apparently the failure mode [1] for `flock` on NFS is **blocking
@@ -376,10 +326,12 @@ fn acquire(config: &Config,
     // hungry work ourselves.
     let jobserver = config.jobserver_from_env();
     if let Some(server) = jobserver {
+        #[cfg(not(target_os = "redox"))]
         server.release_raw()?;
     }
     let result = block().chain_err(|| format!("failed to lock file: {}", path.display()));
     if let Some(server) = jobserver {
+        #[cfg(not(target_os = "redox"))]
         server.acquire_raw()?;
     }
     return Ok(result?);
@@ -408,29 +360,3 @@ fn acquire(config: &Config,
         false
     }
 }
-<<<<<<< HEAD
-=======
-*/
-
-fn create_dir_all(path: &Path) -> io::Result<()> {
-    match create_dir(path) {
-        Ok(()) => Ok(()),
-        Err(e) => {
-            if e.kind() == io::ErrorKind::NotFound {
-                if let Some(p) = path.parent() {
-                    return create_dir_all(p).and_then(|()| create_dir(path))
-                }
-            }
-            Err(e)
-        }
-    }
-}
-
-fn create_dir(path: &Path) -> io::Result<()> {
-    match fs::create_dir(path) {
-        Ok(()) => Ok(()),
-        Err(ref e) if e.kind() == io::ErrorKind::AlreadyExists => Ok(()),
-        Err(e) => Err(e),
-    }
-}
->>>>>>> b12ef014... Redox support
