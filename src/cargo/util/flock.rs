@@ -219,6 +219,7 @@ impl Filesystem {
                 }
             })
             .chain_err(|| format!("failed to open: {}", path.display()))?;
+        #[cfg(not(target_os = "redox"))]
         match state {
             State::Exclusive => {
                 acquire(config, msg, &path, &|| f.try_lock_exclusive(), &|| {
