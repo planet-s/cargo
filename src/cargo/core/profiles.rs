@@ -495,7 +495,7 @@ impl Profile {
             debuginfo: Some(2),
             debug_assertions: true,
             overflow_checks: true,
-            incremental: true,
+            incremental: false,
             ..Profile::default()
         }
     }
