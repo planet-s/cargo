@@ -119,3 +119,4 @@ pretty-env-logger = ['pretty_env_logger']
 [patch.crates-io]
 curl = { path = "redox/curl" }
 curl-sys = { path = "redox/curl/curl-sys" }
+socket2 = { path = "redox/socket2-rs" }

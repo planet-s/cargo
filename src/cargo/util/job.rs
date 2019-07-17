@@ -21,7 +21,7 @@ pub fn setup() -> Option<Setup> {
     unsafe { imp::setup() }
 }
 
-#[cfg(unix)]
+#[cfg(all(unix, not(target_os = "redox")))]
 mod imp {
     use libc;
     use std::env;

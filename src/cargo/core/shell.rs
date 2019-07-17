@@ -393,7 +393,7 @@ mod imp {
     }
 }
 
-#[cfg(all(unix, not(any(target_os = "linux", target_os = "macos"))))]
+#[cfg(all(unix, not(any(target_os = "linux", target_os = "macos", target_os = "redox"))))]
 mod imp {
     pub(super) use super::default_err_erase_line as err_erase_line;
 

@@ -296,7 +296,7 @@ fn acquire(
         // just ignore locking on filesystems that look like they don't
         // implement file locking. We detect that here via the return value of
         // locking (e.g., inspecting errno).
-        #[cfg(unix)]
+        #[cfg(all(unix, not(target_os = "redox")))]
         Err(ref e) if e.raw_os_error() == Some(libc::ENOTSUP) => return Ok(()),
 
         #[cfg(target_os = "linux")]

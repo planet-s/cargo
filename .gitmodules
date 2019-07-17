@@ -26,3 +26,7 @@
 	path = redox/ripgrep
 	url = https://gitlab.redox-os.org/redox-os/ripgrep.git
 	branch = redox
+[submodule "redox/socket2-rs"]
+	path = redox/socket2-rs
+	url = https://gitlab.redox-os.org/redox-os/socket2-rs.git
+	branch = redox
